@@ -34,7 +34,7 @@ const InfoGardener = () => {
         if (stage === 4) {
           setTimeout(() => setShowFact(true), 3000);
         }
-      }, (index + 1) * 1500);
+      }, index * 1500);
     });
   };
 
@@ -237,17 +237,18 @@ const InfoGardener = () => {
         className="cursor-pointer select-none"
         style={{
           position: isWatering ? 'absolute' : (draggedItem?.type === 'wateringCan' ? 'fixed' : 'absolute'),
-          bottom: isWatering ? '240px' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
-          right: isWatering ? '40px' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
-          left: draggedItem?.type === 'wateringCan' && !isWatering ? `${dragPosition.x}px` : 'auto',
+          bottom: isWatering ? '260px' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
+          left: isWatering ? '50%' : (draggedItem?.type === 'wateringCan' && !isWatering ? `${dragPosition.x}px` : 'auto'),
+          right: isWatering ? 'auto' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
+          transform: isWatering ? 'translateX(-50%)' : (draggedItem?.type === 'wateringCan' && !isWatering ? 'none' : 'none'),
           top: draggedItem?.type === 'wateringCan' && !isWatering ? `${dragPosition.y}px` : 'auto',
           pointerEvents: isWatering ? 'none' : 'auto',
-          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering ? 1 : 1),
+          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : 1,
           zIndex: draggedItem?.type === 'wateringCan' ? 1000 : (isWatering ? 40 : 'auto')
         }}
       >
         <div style={{
-          animation: isWatering ? 'tilt 0.6s ease-in-out infinite' : 'none',
+          animation: isWatering ? 'tilt 0.6s ease-in-out infinite, hover 0.6s ease-in-out infinite' : 'none',
           transformOrigin: 'center bottom',
           width: '120px',
           height: '100px',
