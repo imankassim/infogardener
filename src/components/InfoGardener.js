@@ -26,45 +26,6 @@ const InfoGardener = () => {
     setDraggedItem({ item, type, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top });
   };
 
-  const handleMouseMove = (e) => {
-    if (draggedItem) {
-      setDragPosition({ x: e.clientX - draggedItem.offsetX, y: e.clientY - draggedItem.offsetY });
-    }
-  };
-
-  const handleMouseUp = (e) => {
-    if (!draggedItem) return;
-
-    if (draggedItem.type === 'seed' && potRef.current && !potHasSeed) {
-      const potRect = potRef.current.getBoundingClientRect();
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
-
-      if (mouseX >= potRect.left && mouseX <= potRect.right &&
-          mouseY >= potRect.top && mouseY <= potRect.bottom) {
-        setSelectedSeed(draggedItem.item);
-        setPotHasSeed(true);
-      }
-    }
-
-    if (draggedItem.type === 'wateringCan' && potRef.current && potHasSeed && !isWatering) {
-      const potRect = potRef.current.getBoundingClientRect();
-      const mouseX = e.clientX;
-      const mouseY = e.clientY;
-
-      if (mouseX >= potRect.left - 100 && mouseX <= potRect.right + 100 &&
-          mouseY >= potRect.top - 100 && mouseY <= potRect.bottom + 100) {
-        setIsWatering(true);
-        setTimeout(() => {
-          setIsWatering(false);
-          startGrowth();
-        }, 2000);
-      }
-    }
-
-    setDraggedItem(null);
-  };
-
   const startGrowth = () => {
     const stages = [1, 2, 3, 4];
     stages.forEach((stage, index) => {
@@ -86,12 +47,51 @@ const InfoGardener = () => {
   };
 
   useEffect(() => {
+    const handleMouseMoveEvent = (e) => {
+      if (draggedItem) {
+        setDragPosition({ x: e.clientX - draggedItem.offsetX, y: e.clientY - draggedItem.offsetY });
+      }
+    };
+
+    const handleMouseUpEvent = (e) => {
+      if (!draggedItem) return;
+
+      if (draggedItem.type === 'seed' && potRef.current && !potHasSeed) {
+        const potRect = potRef.current.getBoundingClientRect();
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        if (mouseX >= potRect.left && mouseX <= potRect.right &&
+            mouseY >= potRect.top && mouseY <= potRect.bottom) {
+          setSelectedSeed(draggedItem.item);
+          setPotHasSeed(true);
+        }
+      }
+
+      if (draggedItem.type === 'wateringCan' && potRef.current && potHasSeed && !isWatering) {
+        const potRect = potRef.current.getBoundingClientRect();
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        if (mouseX >= potRect.left - 100 && mouseX <= potRect.right + 100 &&
+            mouseY >= potRect.top - 100 && mouseY <= potRect.bottom + 100) {
+          setIsWatering(true);
+          setTimeout(() => {
+            setIsWatering(false);
+            startGrowth();
+          }, 2000);
+        }
+      }
+
+      setDraggedItem(null);
+    };
+
     if (draggedItem) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mousemove', handleMouseMoveEvent);
+      document.addEventListener('mouseup', handleMouseUpEvent);
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mousemove', handleMouseMoveEvent);
+        document.removeEventListener('mouseup', handleMouseUpEvent);
       };
     }
   }, [draggedItem, potHasSeed, isWatering]);
@@ -233,14 +233,14 @@ const InfoGardener = () => {
 
       <div
         ref={wateringCanRef}
-        onMouseDown={(e) => !isWatering && growthStage === 0 && handleMouseDown(e, null, 'wateringCan')}
+        onMouseDown={(e) => !isWatering && handleMouseDown(e, null, 'wateringCan')}
         className="absolute bottom-32 right-32 cursor-pointer select-none"
         style={{
           transform: draggedItem?.type === 'wateringCan' 
             ? `translate(${dragPosition.x}px, ${dragPosition.y}px)` 
             : 'none',
-          pointerEvents: isWatering || growthStage > 0 ? 'none' : 'auto',
-          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering || growthStage > 0 ? 0.5 : 1)
+          pointerEvents: isWatering ? 'none' : 'auto',
+          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering ? 0.5 : 1)
         }}
       >
         <div style={{
