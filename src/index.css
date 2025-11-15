@@ -24,7 +24,6 @@ body {
   overflow: hidden;
 }
 
-/* Custom animations */
 @keyframes fall {
   0% {
     transform: translateY(0);
@@ -36,7 +35,6 @@ body {
   }
 }
 
-/* Disable text selection for better drag experience */
 .no-select {
   -webkit-user-select: none;
   -moz-user-select: none;
