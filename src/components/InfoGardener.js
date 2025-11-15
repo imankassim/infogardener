@@ -194,8 +194,8 @@ const InfoGardener = () => {
         </div>
       </div>
 
-      {potHasSeed && selectedSeed && growthStage > 0 && (
-        <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 pointer-events-none flex flex-col items-center">
+      {selectedSeed && growthStage > 0 && (
+        <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 pointer-events-none flex flex-col items-center z-20">
           {growthStage === 1 && (
             <img 
               src={plantStages[selectedSeed.id][0]} 
