@@ -18,7 +18,7 @@ const InfoGardener = () => {
     { id: 'monstera', name: 'Monstera', color: '#ff69b4' },
     { id: 'snapdragon', name: 'Snapdragon', color: '#ffd700' },
     { id: 'tulip', name: 'Tulip', color: '#ff6347' },
-    { id: 'lily', name: 'Lily', color: '#ffffff' }
+    { id: 'lily', name: 'Lily', color: '#ff1493' }
   ];
 
   const handleMouseDown = (e, item, type) => {
