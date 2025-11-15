@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { seeds, plantStages, Pot, WateringCan, IntroPlant } from './SVGAssets';
 
 const InfoGardener = () => {
@@ -10,6 +10,7 @@ const InfoGardener = () => {
   const [showFact, setShowFact] = useState(false);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [wasWatering, setWasWatering] = useState(false);
   const potRef = useRef(null);
   const wateringCanRef = useRef(null);
 
@@ -26,22 +27,19 @@ const InfoGardener = () => {
     setDraggedItem({ item, type, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top });
   };
 
-  const startGrowth = () => {
-    console.log('startGrowth called');
+  const startGrowth = useCallback(() => {
     const stages = [1, 2, 3, 4];
     stages.forEach((stage, index) => {
       setTimeout(() => {
-        console.log(`Setting growth stage to ${stage}`);
         setGrowthStage(stage);
         if (stage === 4) {
           setTimeout(() => {
-            console.log('Showing fact');
             setShowFact(true);
           }, 3000);
         }
       }, index * 1500);
     });
-  };
+  }, []);
 
   const reset = () => {
     setSelectedSeed(null);
@@ -49,6 +47,7 @@ const InfoGardener = () => {
     setIsWatering(false);
     setGrowthStage(0);
     setShowFact(false);
+    setWasWatering(false);
   };
 
   useEffect(() => {
@@ -74,17 +73,14 @@ const InfoGardener = () => {
       }
 
       if (draggedItem.type === 'wateringCan' && potRef.current && potHasSeed && !isWatering) {
-        console.log('Watering can dropped, checking collision');
         const potRect = potRef.current.getBoundingClientRect();
         const mouseX = e.clientX;
         const mouseY = e.clientY;
 
         if (mouseX >= potRect.left - 100 && mouseX <= potRect.right + 100 &&
             mouseY >= potRect.top - 100 && mouseY <= potRect.bottom + 100) {
-          console.log('Collision detected, starting watering');
           setIsWatering(true);
           setTimeout(() => {
-            console.log('Watering complete, will start growth via useEffect');
             setIsWatering(false);
           }, 2000);
         }
@@ -104,15 +100,17 @@ const InfoGardener = () => {
   }, [draggedItem, potHasSeed, isWatering]);
 
   useEffect(() => {
-    if (!isWatering && potHasSeed && growthStage === 0) {
-      // Growth should start after watering ends
-      const timer = setTimeout(() => {
-        console.log('useEffect triggered: starting growth');
-        startGrowth();
-      }, 100);
-      return () => clearTimeout(timer);
+    if (!isWatering && wasWatering && growthStage === 0) {
+      setWasWatering(false);
+      startGrowth();
     }
-  }, [isWatering, potHasSeed, growthStage]);
+  }, [isWatering, wasWatering, growthStage, startGrowth]);
+
+  useEffect(() => {
+    if (isWatering && !wasWatering) {
+      setWasWatering(true);
+    }
+  }, [isWatering, wasWatering]);
 
   if (page === 'intro') {
     return (
@@ -201,7 +199,7 @@ const InfoGardener = () => {
         </div>
       )}
 
-      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 pointer-events-none" ref={potRef}>
+      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 pointer-events-none z-0" ref={potRef}>
         <div className="relative">
           <img 
             src={Pot} 
@@ -213,7 +211,8 @@ const InfoGardener = () => {
       </div>
 
       {selectedSeed && growthStage > 0 && (
-        <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 pointer-events-none flex flex-col items-center z-20">
+        <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 pointer-events-none flex flex-col items-center z-50" style={{ position: 'absolute' }}>
+          <div style={{ color: 'transparent', fontSize: '20px', height: '1px' }}>Stage {growthStage}</div>
           {growthStage === 1 && (
             <img 
               src={plantStages[selectedSeed.id][0]} 
