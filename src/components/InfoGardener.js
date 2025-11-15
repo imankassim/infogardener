@@ -254,7 +254,7 @@ const InfoGardener = () => {
         className="cursor-pointer select-none"
         style={{
           position: isWatering ? 'absolute' : (draggedItem?.type === 'wateringCan' ? 'fixed' : 'absolute'),
-          bottom: isWatering ? '260px' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
+          bottom: isWatering ? '380px' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
           left: isWatering ? '50%' : (draggedItem?.type === 'wateringCan' && !isWatering ? `${dragPosition.x}px` : 'auto'),
           right: isWatering ? 'auto' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
           transform: isWatering ? 'translateX(-50%)' : (draggedItem?.type === 'wateringCan' && !isWatering ? 'none' : 'none'),
@@ -265,7 +265,7 @@ const InfoGardener = () => {
         }}
       >
         <div style={{
-          animation: isWatering ? 'tilt 0.6s ease-in-out infinite, hover 0.6s ease-in-out infinite' : 'none',
+          animation: isWatering ? 'tilt 2s ease-in-out infinite, shake 0.3s ease-in-out infinite, hover 0.6s ease-in-out infinite' : 'none',
           transformOrigin: 'center bottom',
           width: '120px',
           height: '100px',
@@ -286,7 +286,7 @@ const InfoGardener = () => {
         <div 
           className="absolute pointer-events-none z-30"
           style={{
-            bottom: '240px',
+            bottom: '360px',
             left: '50%',
             transform: 'translateX(-50%)',
             animation: 'hover 0.6s ease-in-out infinite'
@@ -335,8 +335,14 @@ const InfoGardener = () => {
           100% { transform: translateY(100px); opacity: 0; }
         }
         @keyframes tilt {
-          0%, 100% { transform: rotate(0deg); }
-          50% { transform: rotate(-25deg); }
+          0% { transform: rotate(0deg); }
+          50% { transform: rotate(-45deg); }
+          100% { transform: rotate(0deg); }
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0px); }
+          25% { transform: translateX(-4px); }
+          75% { transform: translateX(4px); }
         }
         @keyframes hover {
           0%, 100% { transform: translateY(0px); }
