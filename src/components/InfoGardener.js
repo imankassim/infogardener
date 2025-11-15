@@ -175,7 +175,7 @@ const InfoGardener = () => {
         </div>
       )}
 
-      {growthStage === 4 && selectedSeed && (
+      {selectedSeed && growthStage === 4 && (
         <div className="absolute top-8 left-1/2 transform -translate-x-1/2 bg-white rounded-2xl px-8 py-4 shadow-xl z-10">
           <h2 className="text-3xl font-bold" style={{ color: selectedSeed.color }}>
             {selectedSeed.name}
@@ -194,9 +194,9 @@ const InfoGardener = () => {
         </div>
       </div>
 
-      {potHasSeed && selectedSeed && (
+      {potHasSeed && selectedSeed && growthStage > 0 && (
         <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 pointer-events-none flex flex-col items-center">
-          {growthStage >= 1 && growthStage < 2 && (
+          {growthStage === 1 && (
             <img 
               src={plantStages[selectedSeed.id][0]} 
               alt={`${selectedSeed.name} stage 1`}
@@ -204,7 +204,7 @@ const InfoGardener = () => {
               style={{ maxHeight: '40px', width: 'auto' }}
             />
           )}
-          {growthStage >= 2 && growthStage < 3 && (
+          {growthStage === 2 && (
             <img 
               src={plantStages[selectedSeed.id][1]} 
               alt={`${selectedSeed.name} stage 2`}
@@ -212,7 +212,7 @@ const InfoGardener = () => {
               style={{ maxHeight: '80px', width: 'auto' }}
             />
           )}
-          {growthStage >= 3 && growthStage < 4 && (
+          {growthStage === 3 && (
             <img 
               src={plantStages[selectedSeed.id][2]} 
               alt={`${selectedSeed.name} stage 3`}
