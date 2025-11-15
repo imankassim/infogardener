@@ -136,8 +136,11 @@ const InfoGardener = () => {
             <div
               key={plant.id}
               onMouseDown={(e) => !potHasSeed && handleMouseDown(e, plant, 'seed')}
-              className={`cursor-pointer transition-transform hover:scale-110 ${potHasSeed ? 'opacity-50 cursor-not-allowed' : ''} flex flex-col items-center`}
-              style={{ pointerEvents: potHasSeed ? 'none' : 'auto' }}
+              className={`cursor-pointer transition-transform hover:scale-110 ${potHasSeed ? 'opacity-50 cursor-not-allowed' : ''}`}
+              style={{ 
+                pointerEvents: potHasSeed ? 'none' : 'auto',
+                opacity: draggedItem?.item?.id === plant.id ? 0.5 : 1
+              }}
             >
               <img 
                 src={seeds[plant.id]} 
@@ -147,9 +150,28 @@ const InfoGardener = () => {
                 className="select-none"
                 draggable="false"
               />
-              <p className="text-center text-sm mt-2 font-medium text-gray-700">{plant.name}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {draggedItem?.type === 'seed' && (
+        <div
+          className="fixed pointer-events-none z-50"
+          style={{
+            left: `${dragPosition.x}px`,
+            top: `${dragPosition.y}px`,
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <img 
+            src={seeds[draggedItem.item.id]} 
+            alt="dragging seed" 
+            width="60" 
+            height="60"
+            className="select-none drop-shadow-lg"
+            draggable="false"
+          />
         </div>
       )}
 
@@ -161,7 +183,7 @@ const InfoGardener = () => {
         </div>
       )}
 
-      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2">
+      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 pointer-events-none">
         <div ref={potRef} className="relative">
           <img 
             src={Pot} 
@@ -169,45 +191,45 @@ const InfoGardener = () => {
             className="w-[200px] h-[150px] select-none" 
             draggable="false"
           />
-          
-          {potHasSeed && selectedSeed && (
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full pointer-events-none flex items-end justify-center">
-              {growthStage >= 1 && growthStage < 2 && (
-                <img 
-                  src={plantStages[selectedSeed.id][0]} 
-                  alt={`${selectedSeed.name} stage 1`}
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 transition-all duration-500"
-                  style={{ maxHeight: '40px', width: 'auto' }}
-                />
-              )}
-              {growthStage >= 2 && growthStage < 3 && (
-                <img 
-                  src={plantStages[selectedSeed.id][1]} 
-                  alt={`${selectedSeed.name} stage 2`}
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 transition-all duration-500"
-                  style={{ maxHeight: '80px', width: 'auto' }}
-                />
-              )}
-              {growthStage >= 3 && growthStage < 4 && (
-                <img 
-                  src={plantStages[selectedSeed.id][2]} 
-                  alt={`${selectedSeed.name} stage 3`}
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 transition-all duration-500"
-                  style={{ maxHeight: '120px', width: 'auto' }}
-                />
-              )}
-              {growthStage >= 4 && (
-                <img 
-                  src={plantStages[selectedSeed.id][3]} 
-                  alt={`${selectedSeed.name} stage 4`}
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 transition-all duration-500"
-                  style={{ maxHeight: '180px', width: 'auto' }}
-                />
-              )}
-            </div>
-          )}
         </div>
       </div>
+
+      {potHasSeed && selectedSeed && (
+        <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 pointer-events-none flex flex-col items-center">
+          {growthStage >= 1 && growthStage < 2 && (
+            <img 
+              src={plantStages[selectedSeed.id][0]} 
+              alt={`${selectedSeed.name} stage 1`}
+              className="transition-all duration-500"
+              style={{ maxHeight: '40px', width: 'auto' }}
+            />
+          )}
+          {growthStage >= 2 && growthStage < 3 && (
+            <img 
+              src={plantStages[selectedSeed.id][1]} 
+              alt={`${selectedSeed.name} stage 2`}
+              className="transition-all duration-500"
+              style={{ maxHeight: '80px', width: 'auto' }}
+            />
+          )}
+          {growthStage >= 3 && growthStage < 4 && (
+            <img 
+              src={plantStages[selectedSeed.id][2]} 
+              alt={`${selectedSeed.name} stage 3`}
+              className="transition-all duration-500"
+              style={{ maxHeight: '120px', width: 'auto' }}
+            />
+          )}
+          {growthStage >= 4 && (
+            <img 
+              src={plantStages[selectedSeed.id][3]} 
+              alt={`${selectedSeed.name} stage 4`}
+              className="transition-all duration-500"
+              style={{ maxHeight: '180px', width: 'auto' }}
+            />
+          )}
+        </div>
+      )}
 
       <div
         ref={wateringCanRef}
@@ -218,19 +240,37 @@ const InfoGardener = () => {
             ? `translate(${dragPosition.x}px, ${dragPosition.y}px)` 
             : 'none',
           pointerEvents: isWatering || growthStage > 0 ? 'none' : 'auto',
-          opacity: isWatering || growthStage > 0 ? 0.5 : 1
+          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering || growthStage > 0 ? 0.5 : 1)
         }}
       >
-        <img 
-          src={WateringCan} 
-          alt="Watering can" 
-          className="w-[120px] h-[100px]" 
-          draggable="false"
-        />
+        <div style={{
+          animation: isWatering ? 'tilt 0.6s ease-in-out infinite' : 'none',
+          transformOrigin: 'center bottom',
+          width: '120px',
+          height: '100px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <img 
+            src={WateringCan} 
+            alt="Watering can" 
+            className="w-[120px] h-[100px]" 
+            draggable="false"
+          />
+        </div>
       </div>
 
       {isWatering && (
-        <div className="absolute bottom-64 left-1/2 transform -translate-x-1/2 pointer-events-none z-30">
+        <div 
+          ref={wateringCanRef}
+          className="absolute pointer-events-none z-30"
+          style={{
+            bottom: '225px',
+            right: '56px',
+            animation: 'hover 0.6s ease-in-out infinite'
+          }}
+        >
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
@@ -272,6 +312,14 @@ const InfoGardener = () => {
         @keyframes fall {
           0% { transform: translateY(0); opacity: 1; }
           100% { transform: translateY(100px); opacity: 0; }
+        }
+        @keyframes tilt {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(-25deg); }
+        }
+        @keyframes hover {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
         }
       `}</style>
     </div>
