@@ -236,14 +236,14 @@ const InfoGardener = () => {
         onMouseDown={(e) => !isWatering && handleMouseDown(e, null, 'wateringCan')}
         className="cursor-pointer select-none"
         style={{
-          position: draggedItem?.type === 'wateringCan' ? 'fixed' : 'absolute',
-          bottom: draggedItem?.type === 'wateringCan' ? 'auto' : '128px',
-          right: draggedItem?.type === 'wateringCan' ? 'auto' : '128px',
-          left: draggedItem?.type === 'wateringCan' ? `${dragPosition.x}px` : 'auto',
-          top: draggedItem?.type === 'wateringCan' ? `${dragPosition.y}px` : 'auto',
+          position: isWatering ? 'absolute' : (draggedItem?.type === 'wateringCan' ? 'fixed' : 'absolute'),
+          bottom: isWatering ? '240px' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
+          right: isWatering ? '40px' : (draggedItem?.type === 'wateringCan' ? 'auto' : '128px'),
+          left: draggedItem?.type === 'wateringCan' && !isWatering ? `${dragPosition.x}px` : 'auto',
+          top: draggedItem?.type === 'wateringCan' && !isWatering ? `${dragPosition.y}px` : 'auto',
           pointerEvents: isWatering ? 'none' : 'auto',
-          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering ? 0.5 : 1),
-          zIndex: draggedItem?.type === 'wateringCan' ? 1000 : 'auto'
+          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering ? 1 : 1),
+          zIndex: draggedItem?.type === 'wateringCan' ? 1000 : (isWatering ? 40 : 'auto')
         }}
       >
         <div style={{
@@ -266,11 +266,11 @@ const InfoGardener = () => {
 
       {isWatering && (
         <div 
-          ref={wateringCanRef}
           className="absolute pointer-events-none z-30"
           style={{
-            bottom: '225px',
-            right: '56px',
+            bottom: '240px',
+            left: '50%',
+            transform: 'translateX(-50%)',
             animation: 'hover 0.6s ease-in-out infinite'
           }}
         >
