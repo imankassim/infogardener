@@ -27,12 +27,17 @@ const InfoGardener = () => {
   };
 
   const startGrowth = () => {
+    console.log('startGrowth called');
     const stages = [1, 2, 3, 4];
     stages.forEach((stage, index) => {
       setTimeout(() => {
+        console.log(`Setting growth stage to ${stage}`);
         setGrowthStage(stage);
         if (stage === 4) {
-          setTimeout(() => setShowFact(true), 3000);
+          setTimeout(() => {
+            console.log('Showing fact');
+            setShowFact(true);
+          }, 3000);
         }
       }, index * 1500);
     });
@@ -69,16 +74,18 @@ const InfoGardener = () => {
       }
 
       if (draggedItem.type === 'wateringCan' && potRef.current && potHasSeed && !isWatering) {
+        console.log('Watering can dropped, checking collision');
         const potRect = potRef.current.getBoundingClientRect();
         const mouseX = e.clientX;
         const mouseY = e.clientY;
 
         if (mouseX >= potRect.left - 100 && mouseX <= potRect.right + 100 &&
             mouseY >= potRect.top - 100 && mouseY <= potRect.bottom + 100) {
+          console.log('Collision detected, starting watering');
           setIsWatering(true);
           setTimeout(() => {
+            console.log('Watering complete, will start growth via useEffect');
             setIsWatering(false);
-            startGrowth();
           }, 2000);
         }
       }
@@ -95,6 +102,17 @@ const InfoGardener = () => {
       };
     }
   }, [draggedItem, potHasSeed, isWatering]);
+
+  useEffect(() => {
+    if (!isWatering && potHasSeed && growthStage === 0) {
+      // Growth should start after watering ends
+      const timer = setTimeout(() => {
+        console.log('useEffect triggered: starting growth');
+        startGrowth();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isWatering, potHasSeed, growthStage]);
 
   if (page === 'intro') {
     return (
@@ -183,8 +201,8 @@ const InfoGardener = () => {
         </div>
       )}
 
-      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 pointer-events-none">
-        <div ref={potRef} className="relative">
+      <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 pointer-events-none" ref={potRef}>
+        <div className="relative">
           <img 
             src={Pot} 
             alt="Plant pot" 
