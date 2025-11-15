@@ -234,13 +234,16 @@ const InfoGardener = () => {
       <div
         ref={wateringCanRef}
         onMouseDown={(e) => !isWatering && handleMouseDown(e, null, 'wateringCan')}
-        className="absolute bottom-32 right-32 cursor-pointer select-none"
+        className="cursor-pointer select-none"
         style={{
-          transform: draggedItem?.type === 'wateringCan' 
-            ? `translate(${dragPosition.x}px, ${dragPosition.y}px)` 
-            : 'none',
+          position: draggedItem?.type === 'wateringCan' ? 'fixed' : 'absolute',
+          bottom: draggedItem?.type === 'wateringCan' ? 'auto' : '128px',
+          right: draggedItem?.type === 'wateringCan' ? 'auto' : '128px',
+          left: draggedItem?.type === 'wateringCan' ? `${dragPosition.x}px` : 'auto',
+          top: draggedItem?.type === 'wateringCan' ? `${dragPosition.y}px` : 'auto',
           pointerEvents: isWatering ? 'none' : 'auto',
-          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering ? 0.5 : 1)
+          opacity: draggedItem?.type === 'wateringCan' ? 0.7 : (isWatering ? 0.5 : 1),
+          zIndex: draggedItem?.type === 'wateringCan' ? 1000 : 'auto'
         }}
       >
         <div style={{
